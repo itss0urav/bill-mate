@@ -1,10 +1,13 @@
-import React from 'react';
-import BillForm from './BillForm';
+import React from "react";
+import BillForm from "./BillForm";
+import { colors } from "@mui/material";
 
 const App = () => {
   return (
     <div>
-      <h1>Bill Creation App</h1>
+      <div style={{ textAlign: "center" }}>
+        <h1>Bill Mate</h1>
+      </div>
       <BillForm />
     </div>
   );

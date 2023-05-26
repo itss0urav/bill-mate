@@ -27,7 +27,9 @@ const BillForm = () => {
     const [items, setItems] = useState([]);
     const [taxRate, setTaxRate] = useState(0);
     const [discountRate, setDiscountRate] = useState(0);
+    const [notes, setNotes] = useState("");
     const containerRef = useRef(null);
+
     const handleAddItem = () => {
         setItems([...items, item]);
         setItem({ name: "", description: "", quantity: "", price: "" });
@@ -55,54 +57,165 @@ const BillForm = () => {
     };
 
     const handleCreateBill = () => {
-        const content = `<div style="margin-bottom: 20px;"> <h2 style="text-align: center;">Invoice</h2> <div style="display: flex; justify-content: space-between;"> <div> <p><strong>Invoice Number:</strong> ${invoiceNumber}</p> <p><strong>Due Date:</strong> ${dueDate}</p> </div> <div> <p><strong>Bill To:</strong></p> <p>${billToName}</p> <p>${billToEmail}</p> <p>${billToAddress}</p> </div> </div> <div style="display: flex; justify-content: space-between;"> <div> <p><strong>Bill From:</strong></p> <p>${billFromName}</p> <p>${billFromEmail}</p> <p>${billFromAddress}</p> </div> <div> <p><strong>Items:</strong></p> <ul> ${items
-            .map(
-                (item, index) => `<li>
-<p><strong>Item ${index + 1}</strong></p>
-<p><strong>Name:</strong> ${item.name}</p>
-<p><strong>Description:</strong> ${item.description}</p>
-<p><strong>Quantity:</strong> ${item.quantity}</p>
-<p><strong>Price:</strong> ${item.price}</p>
-<p><strong>Subtotal:</strong> ${(
-                        parseFloat(item.quantity) * parseFloat(item.price)
-                    ).toFixed(2)}</p>
-<button onclick="handleDeleteItem(${index})">Delete</button>
-</li>`
-            )
-            .join(
-                ""
-            )} </ul> </div> </div> <div style="text-align: right;"> <p><strong>Subtotal:</strong> ${calculateSubtotal()}</p> <p><strong>Tax:</strong> ${(
-                (calculateSubtotal() * taxRate) /
-                100
-            ).toFixed(2)}</p> <p><strong>Discount:</strong> ${(
-                (calculateSubtotal() * discountRate) /
-                100
-            ).toFixed(
-                2
-            )}</p> <p><strong>Total:</strong> ${calculateTotal()}</p> </div> <div> <p><strong>Notes:</strong></p> <p>[Notes]</p> </div> </div> `;
-
-        const container = document.createElement("div"); // Create a new container element
-        container.innerHTML = content;
-
+        const styles = `
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+            }
+            .invoice {
+              margin: 20px auto;
+              max-width: 800px;
+              padding: 20px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              background-color: #fff;
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 20px;
+            }
+            .bill-info {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 20px;
+            }
+            .bill-info > div {
+              width: 50%;
+            }
+            .item-list {
+              margin-bottom: 20px;
+            }
+            .item-list ul {
+              list-style-type: none;
+              padding: 0;
+              margin: 0;
+            }
+            .item {
+              margin-bottom: 10px;
+              padding: 10px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              background-color: #f9f9f9;
+            }
+            .item > p {
+              margin: 0;
+            }
+            .item-delete {
+              text-align: right;
+            }
+            .subtotal {
+              text-align: right;
+              margin-bottom: 10px;
+            }
+            .notes {
+              margin-top: 20px;
+            }
+          </style>
+        `;
+      
+        const content = `
+          <div class="invoice">
+            <div class="header">
+              <h2>Invoice</h2>
+            </div>
+            <div class="bill-info">
+              <div>
+                <p><strong>Invoice Number:</strong> ${invoiceNumber}</p>
+                <p><strong>Due Date:</strong> ${dueDate}</p>
+              </div>
+              <div>
+                <p><strong>Bill To:</strong></p>
+                <p>${billToName}</p>
+                <p>${billToEmail}</p>
+                <p>${billToAddress}</p>
+              </div>
+            </div>
+            <div class="bill-info">
+              <div>
+                <p><strong>Bill From:</strong></p>
+                <p>${billFromName}</p>
+                <p>${billFromEmail}</p>
+                <p>${billFromAddress}</p>
+              </div>
+              <div>
+                <p><strong>Items:</strong></p>
+                <div class="item-list">
+                  <ul>
+                    ${items
+                      .map(
+                        (item, index) => `
+                        <li class="item">
+                          <p><strong>Item ${index + 1}</strong></p>
+                          <p><strong>Name:</strong> ${item.name}</p>
+                          <p><strong>Description:</strong> ${item.description}</p>
+                          <p><strong>Quantity:</strong> ${item.quantity}</p>
+                          <p><strong>Price:</strong> ${item.price}</p>
+                          <p><strong>Subtotal:</strong> ${
+                            parseFloat(item.quantity) * parseFloat(item.price)
+                          }</p>
+                          <div class="item-delete">
+                            <button onclick="handleDeleteItem(${index})">Delete</button>
+                          </div>
+                        </li>
+                      `
+                      )
+                      .join("")}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="subtotal">
+              <p><strong>Subtotal:</strong> ${calculateSubtotal()}</p>
+              <p><strong>Tax:</strong> ${
+                ((calculateSubtotal() * taxRate) / 100).toFixed(2)
+              }</p>
+              <p><strong>Discount:</strong> ${
+                ((calculateSubtotal() * discountRate) / 100).toFixed(2)
+              }</p>
+              <p><strong>Total:</strong> ${calculateTotal()}</p>
+            </div>
+            <div class="notes">
+              <p><strong>Notes:</strong></p>
+              <p>${notes}</p>
+            </div>
+          </div>
+        `;
+      
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Invoice</title>
+              ${styles}
+            </head>
+            <body>
+              ${content}
+            </body>
+          </html>
+        `;
+      
+        const container = document.createElement("div");
+        container.innerHTML = htmlContent;
+      
         // Attach the container to the document
         if (containerRef.current) {
-            containerRef.current.appendChild(container);
+          containerRef.current.appendChild(container);
         }
-
+      
         // Save the PDF using the container element
         savePDF(container, { paperSize: "A4" });
-
+      
         // Remove the container from the document
         if (containerRef.current) {
-            containerRef.current.removeChild(container);
+          containerRef.current.removeChild(container);
         }
-    };
+      };
+      
+
     return (
         <Container maxWidth="md" sx={{ marginTop: "50px" }}>
-            <Typography
-                variant="h4"
-                sx={{ textAlign: "center", marginBottom: "30px" }}
-            >
+            <Typography variant="h4" sx={{ textAlign: "center", marginBottom: "30px" }}>
                 Bill Creation
             </Typography>
             <form>
@@ -116,8 +229,6 @@ const BillForm = () => {
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                    <div ref={containerRef}></div>
-
                         <TextField
                             label="Due Date"
                             type="date"
@@ -203,9 +314,7 @@ const BillForm = () => {
                             label="Item Description"
                             fullWidth
                             value={item.description}
-                            onChange={(e) =>
-                                setItem({ ...item, description: e.target.value })
-                            }
+                            onChange={(e) => setItem({ ...item, description: e.target.value })}
                         />
                     </Grid>
                     <Grid item xs={6} sm={2}>
@@ -293,18 +402,23 @@ const BillForm = () => {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Button
-                            variant="contained"
-                            color="primary"
+                        <TextField
+                            label="Notes"
+                            multiline
+                            rows={4}
                             fullWidth
-                            onClick={handleCreateBill}
-                            sx={{ marginTop: "20px" }}
-                        >
-                            Create Bill
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sx={{ textAlign: "center" }}>
+                        <Button variant="contained" onClick={handleCreateBill}>
+                            Generate Bill
                         </Button>
                     </Grid>
                 </Grid>
             </form>
+            <div ref={containerRef}></div>
         </Container>
     );
 };
