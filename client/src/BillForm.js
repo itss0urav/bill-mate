@@ -82,7 +82,14 @@ const BillForm = () => {
             }
             .bill-info > div {
               width: 50%;
+              display:flex;
+              gap:1rem
             }
+            .bill-info1 > div {
+              width: 50%;
+             
+            }
+
             .item-list {
               margin-bottom: 20px;
             }
@@ -97,9 +104,11 @@ const BillForm = () => {
               border: 1px solid #ccc;
               border-radius: 5px;
               background-color: #f9f9f9;
+              display:flex;
             }
             .item > p {
               margin: 0;
+              display:flex;
             }
             .item-delete {
               text-align: right;
@@ -111,60 +120,85 @@ const BillForm = () => {
             .notes {
               margin-top: 20px;
             }
+            table {
+              border-collapse: collapse;
+              width: 100%;
+            }
+          
+            th, td {
+              border: 1px solid #ddd;
+              padding: 8px;
+              text-align: left;
+            }
+          
+            th {
+              background-color: #f2f2f2;
+            }
+          
+            tr:nth-child(even) {
+              background-color: #f9f9f9;
+            }
+          
+            tr:hover {
+              background-color: #e9e9e9;
+            }
           </style>
         `;
       
         const content = `
           <div class="invoice">
             <div class="header">
-              <h2>Invoice</h2>
+              <h2>${billFromName}</h2>
+              <h3>${billFromEmail}</h2>
+              <h3>${billFromAddress}</h2>
             </div>
             <div class="bill-info">
-              <div>
+            
                 <p><strong>Invoice Number:</strong> ${invoiceNumber}</p>
                 <p><strong>Due Date:</strong> ${dueDate}</p>
-              </div>
+         
+            </div>
+            <div class="bill-info1">
               <div>
                 <p><strong>Bill To:</strong></p>
-                <p>${billToName}</p>
-                <p>${billToEmail}</p>
-                <p>${billToAddress}</p>
+                <p>Name:${billToName}</p>
+                <p>Email:${billToEmail}</p>
+                <p>Address:${billToAddress}</p>
               </div>
             </div>
-            <div class="bill-info">
-              <div>
-                <p><strong>Bill From:</strong></p>
-                <p>${billFromName}</p>
-                <p>${billFromEmail}</p>
-                <p>${billFromAddress}</p>
-              </div>
               <div>
                 <p><strong>Items:</strong></p>
-                <div class="item-list">
-                  <ul>
-                    ${items
-                      .map(
-                        (item, index) => `
-                        <li class="item">
-                          <p><strong>Item ${index + 1}</strong></p>
-                          <p><strong>Name:</strong> ${item.name}</p>
-                          <p><strong>Description:</strong> ${item.description}</p>
-                          <p><strong>Quantity:</strong> ${item.quantity}</p>
-                          <p><strong>Price:</strong> ${item.price}</p>
-                          <p><strong>Subtotal:</strong> ${
-                            parseFloat(item.quantity) * parseFloat(item.price)
-                          }</p>
-                          <div class="item-delete">
-                            <button onclick="handleDeleteItem(${index})">Delete</button>
-                          </div>
-                        </li>
-                      `
-                      )
-                      .join("")}
-                  </ul>
-                </div>
+                <table>
+                <thead>
+                  <tr>
+                    <th>Sl:No</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${items
+                    .map(
+                      (item, index) => `
+                      <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.description}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.price}</td>
+                        <td>${parseFloat(item.quantity) * parseFloat(item.price)}</td>
+                      </tr>
+                    `
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+       
               </div>
-            </div>
+         
             <div class="subtotal">
               <p><strong>Subtotal:</strong> ${calculateSubtotal()}</p>
               <p><strong>Tax:</strong> ${
